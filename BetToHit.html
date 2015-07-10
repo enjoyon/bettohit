@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="css/style.css">
+
+	<!-- Full Jquery for debugging -->
+	<script type="text/javascript" src="libs/jquery-1.11.3.js"></script>
+	<!-- CreateJS Libraries -->
+	<script type="text/javascript" src="libs/preloadjs-0.6.1.combined.js"></script>
+	<script type="text/javascript" src="libs/easeljs-0.8.1.combined.js"></script>
+	<script type="text/javascript" src="libs/soundjs-0.6.1.combined.js"></script>
+	<script type="text/javascript" src="libs/tweenjs-0.6.1.combined.js"></script>
+
+	<!-- <script type="text/javascript" src="libs/jquery-1.11.3.min.js"></script> -->
+	<script type="text/javascript" src="core/core.js"></script>
+
+	<!-- Main Game -->
+	<script type="text/javascript" src="game.js"></script>
+</head>
+<body>
+	<header>
+		<h1>BetToHit</h1>
+	</header>
+	<div id="center-canvas">
+		<div id="canvas">
+			<div id="background" />
+		</div>
+	</div>
+	<input type="button" onclick="GCore.Start()" value="Start" text = "Start" />
+	<input type="button" onclick="GCore.Stop()" value="Stop" text = "Stop" />
+	<footer>
+		© 2015 Christoph Lipphart. All rights reserved.
+	</footer>
+</body>
+</html>
