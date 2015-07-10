@@ -17,8 +17,12 @@ function Worm(Body)
 	this.Body = Body;
 
 	this.Paralysed = 0;
-	this.CurrentLength = 0;
-	this.TargetLength = 0;
+	this.CurrentLength = 600 + this.Body.Height;
+	this.TargetLength = Body.GetLength();
+	if (this.Body.IsFlipped)
+	{
+		this.CurrentLength += 200;
+	}
 }
 
 /**
@@ -31,17 +35,17 @@ Worm.prototype.Tick = function (dt)
 	// If the worm was hit and the target length is lower
 	if (!GMath.IsNearlyEqual(this.CurrentLength, this.TargetLength))
 	{
-		GMath.Lerp(this.CurrentLength, this.TargetLength, dt * GConfig.Worm.SinkingSpeed);
+		this.CurrentLength = GMath.Lerp(this.CurrentLength, this.TargetLength, dt * GConfig.Worm.SinkingSpeed);
 		if (this.Body)
 		{
 			this.Body.SetLength(this.CurrentLength);
 		}
-		this.Body.IsSinking(true);
+		this.Body.SetIsSinking(true);
 		canFight = false;
 	}
 	else
 	{
-		this.Body.IsSinking(false);
+		this.Body.SetIsSinking(false);
 	}
 
 	// If the worm is paralysed
@@ -57,9 +61,18 @@ Worm.prototype.Tick = function (dt)
 		this.Fight();
 	}
 
-	this.Weapon.Tick(dt);
-	this.Sole.Tick(dt);
-	this.Body.Tick(dt);
+	if (this.Weapon)
+	{
+		this.Weapon.Tick(dt);
+	}
+	if (this.Sole)
+	{
+		this.Sole.Tick(dt);
+	}
+	if (this.Body)
+	{
+		this.Body.Tick(dt);
+	}
 };
 
 /**

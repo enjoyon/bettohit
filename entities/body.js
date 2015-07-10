@@ -8,120 +8,57 @@
 
 /**
  * Creates a new Worm
- * @param Body:GBody the body of the worm
+ * @param {HTMLImage} Image a loaded image for the body
  */
-function Worm(Body)
+function GBody(Image, OffsetX, Flipped)
 {
-	this.Weapon = null;
-	this.Sole = null;
-	this.Body = Body;
+	this.Image = Image;
+	this.Shape = new createjs.Bitmap(Image);
+	this.IsSinking = false;
 
-	this.Paralysed = 0;
-	this.CurrentLength = 0;
-	this.TargetLength = 0;
-}
+	this.Shape.y = GWorld.Floor.Y - this.Image.height;
 
-/**
- * Ticks this worm and all its components
- */
-Worm.prototype.Tick = function (dt)
-{
-	var canFight = true;
+	this.Height = this.Image.height;
+	this.Width = this.Image.width;
 
-	// If the worm was hit and the target length is lower
-	if (!GMath.IsNearlyEqual(this.CurrentLength, this.TargetLength))
+	if (Flipped)
 	{
-		GMath.Lerp(this.CurrentLength, this.TargetLength, dt * GConfig.Worm.SinkingSpeed);
-		if (this.Body)
-		{
-			this.Body.SetLength(this.CurrentLength);
-		}
-		this.Body.IsSinking(true);
-		canFight = false;
+		this.Shape.scaleX = -1;
+		this.Shape.x = GWorld.Floor.RightWormX + (this.Image.width * 0.5) - OffsetX;
 	}
 	else
 	{
-		this.Body.IsSinking(false);
+		this.Shape.x = GWorld.Floor.LeftWormX - (this.Image.width * 0.5) + OffsetX;
 	}
 
-	// If the worm is paralysed
-	if (this.Paralysed > 0)
-	{
-		this.Paralysed -= dt;
-		canFight = false;
-	}
-	
-	// Try to fight
-	if (canFight)
-	{
-		this.Fight();
-	}
+	this.IsFlipped = Flipped;
+}
 
-	this.Weapon.Tick(dt);
-	this.Sole.Tick(dt);
-	this.Body.Tick(dt);
+/**
+ * Sets the y position of the worm seeing it 
+ * as length of the worm which is out of the floor.
+ * @param {Number} length	The length of the worm.
+ */
+GBody.prototype.SetLength = function(length)
+{
+	this.Shape.y = length;
+};
+
+GBody.prototype.GetLength = function()
+{
+	return this.Shape.y;
 };
 
 /**
- * Tries to fight with the weapon
+ * Sets the body to be sinking.
+ * TODO: Change the face
  */
-Worm.prototype.Fight = function()
+GBody.prototype.SetIsSinking = function( IsSinking )
 {
-	if (this.Weapon)
-	{
-		if (this.Weapon.CanAttack())
-		{
-			this.Weapon.Attack();
-		}
-	}
+	this.IsSinking = IsSinking;
 };
 
-/**
- * Sinks this Worm into the ground
- */
-Worm.prototype.Sink = function( impactVolume )
+GBody.prototype.Tick = function( dt )
 {
-	var sinkImpact = impactVolume * GConfig.Worm.ImpactVolumeToSink;
 
-	this.TargetLength = GMath.Limit(this.TargetLength - impactVolume, 0, this.TargetLength);
 };
-
-/**
- * Paralyse the worm 
- */
-Worm.prototype.Paralyse = function( impactVolume )
-{
-	// Get the paralysed 
-	var paralysedTime = impactVolume * GConfig.Worm.ImpactVolumeToParalysedTime;
-
-	// limit the paralysed time
-	this.Paralysed = GMath.Limit(paralysedTime, GConfig.Worm.MinParalysedTime, GConfig.Worm.MaxParalysedTime);
-};
-
-/**
- * Called when an opponent hits this worm with its weapon.
- * @param Opponent:Worm	The opponent which executes the fight.
- */
-Worm.prototype.ReceiveImpact = function(Opponent)
-{
-	if (Opponent)
-	{
-		var impactVolume = 0;
-
-		// What is the strength of the opponents weapon
-		if (Opponent.Weapon)
-		{
-			impactVolume += Opponent.Weapon.GetStrength();
-		}
-
-		// Limit the impact using the sole
-		if (this.Sole)
-		{
-			impactVolume = this.Sole.LimitImpact(impactVolume);
-		}
-
-		this.Sink( impactVolume );
-		this.Paralyse( impactVolume );
-	}
-};
-

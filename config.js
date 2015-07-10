@@ -31,7 +31,7 @@ GConfig = (function()
 		MaxParalysedTime : 2,
 
 		/** Determines the speed of the sinking when the worm was hit */
-		SinkingSpeed : 10,
+		SinkingSpeed : 4,
 	};
 
 	return config;

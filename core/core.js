@@ -25,9 +25,17 @@ GCore = (function(){
 	var deltatime = 0;
 	var time = 0;
 
+	var game = null;
+
+	var isInitialized = false;
+
 	// ///////////////////////////////////////////////////
 	// public:
 	// ///////////////////////////////////////////////////
+	core.GetStage = function()
+	{
+		return stage;
+	};
 
 	/**
 	 * Starts the core ticking
@@ -73,6 +81,31 @@ GCore = (function(){
 		return deltatime;
 	};
 
+	/**
+	 * Registers the game in the core.
+	 * I the core is already initialized
+	 * the Initialize of the game will be called immediately.
+	 * 
+	 * @param { GGame } A game supporting by this core.
+	 */
+	core.RegisterGame = function(Game)
+	{
+		game = Game;
+		if (isInitialized)
+		{
+			game.Initialize();
+		}
+	};
+
+	/**
+	 * Adds a DisplayObject on top of the stage
+	 */
+	core.AddDisplayObject = function( DisplayObject )
+	{
+		var obj = stage.addChild( DisplayObject );
+		stage.setChildIndex( obj, stage.getNumChildren()-1);
+	};
+
 	// ///////////////////////////////////////////////////
 	// private:
 	// ///////////////////////////////////////////////////
@@ -86,8 +119,11 @@ GCore = (function(){
 	{
 		deltatime = dt;
 		time += dt;
-		
-		
+
+		if (game)
+		{
+			game.Update(dt);
+		}
 	}
 
 	/**
@@ -167,13 +203,20 @@ GCore = (function(){
 	 */
 	function initialize()
 	{
-		stage = new createjs.Stage("canvas");
+		stage = new createjs.Stage("game-canvas");
 
 		// find canvas
 		canvasOuter = $("#center-canvas");
-		canvas = $("#canvas");
+		canvas = $("#game-canvas");
 
 		centerCanvas();
+
+		if (game)
+		{
+			game.Initialize();
+		}
+
+		isInitialized = true;
 	}
 
 	// Register initialize function of the core
