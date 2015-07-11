@@ -10,28 +10,29 @@
  * Creates a new Worm
  * @param {HTMLImage} Image a loaded image for the body
  */
-function GBody(Image, OffsetX, Flipped)
+function GBody(Image, Config, IsLeft)
 {
 	this.Image = Image;
-	this.Shape = new createjs.Bitmap(Image);
+	this.Visual = new createjs.Bitmap(Image);
 	this.IsSinking = false;
 
-	this.Shape.y = GWorld.Floor.Y - this.Image.height;
+	this.Visual.y = GConfig.World.WormGroundY - this.Image.height + Config.OffsetY;
 
 	this.Height = this.Image.height;
 	this.Width = this.Image.width;
 
-	if (Flipped)
+	if (IsLeft)
 	{
-		this.Shape.scaleX = -1;
-		this.Shape.x = GWorld.Floor.RightWormX + (this.Image.width * 0.5) - OffsetX;
+		this.Visual.x = GConfig.World.LeftWormX - (this.Image.width * 0.5) + Config.LeftOffset;
 	}
 	else
 	{
-		this.Shape.x = GWorld.Floor.LeftWormX - (this.Image.width * 0.5) + OffsetX;
+		this.Visual.scaleX = -1;
+		this.Visual.x = GConfig.World.RightWormX + (this.Image.width * 0.5) + Config.RightOffset;
 	}
 
-	this.IsFlipped = Flipped;
+	this.IsLeft  = IsLeft;
+	this.IsRight = !IsLeft;
 }
 
 /**
@@ -41,12 +42,12 @@ function GBody(Image, OffsetX, Flipped)
  */
 GBody.prototype.SetLength = function(length)
 {
-	this.Shape.y = length;
+	this.Visual.y = length;
 };
 
 GBody.prototype.GetLength = function()
 {
-	return this.Shape.y;
+	return this.Visual.y;
 };
 
 /**

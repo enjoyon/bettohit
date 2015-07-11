@@ -6,118 +6,164 @@
  * (c) Copyright 2015 Christoph Lipphart
  */
 
-function Worm()
+function GWeapon(Image, Config, IsLeft)
 {
-	this.Weapon = null;
-	this.Sole = null;
-	this.Body = null;
+	// Weapon Visual
+	this.Image = Image;
+	this.Visual = new createjs.Container();
+	this.ImageVisual = new createjs.Bitmap(Image);
+	
 
-	this.Paralysed = 0;
-	this.CurrentLength = 0;
-	this.TargetLength = 0;
+
+	
+
+	this.Visual.addChild( this.ImageVisual );
+
+	if (IsLeft)
+	{
+		this.Visual.rotation = -Config.BaseRotation;
+		this.ImageVisual.x = -this.Image.width * 0.5 + Config.LOffsetX;
+		this.ImageVisual.y = Config.LOffsetY;
+	}
+	else
+	{
+		this.Visual.rotation = Config.BaseRotation;
+		this.ImageVisual.scaleX = -1;
+		this.ImageVisual.x = Config.ROffsetX;
+		this.ImageVisual.y = Config.ROffsetY;
+	}
+
+	// Weapon Config
+	this.IsBackground = Config.IsBackground;
+	this.Strength = Config.Strength;
+	this.Config = Config;
+	this.IsLeft = IsLeft;
+
+	// Weapon Attacking
+	this.CoolDown = 1;
+	this.IsAttacking = false;
+
+	// Worms
+	this.Owner		= null;
+	this.Opponent	= null;
+
+	// DEBUG: 
+	// this.DebugVis = new createjs.Shape();
+	// this.DebugVis.graphics.beginFill("#f00").drawCircle(0, 0, 15);
+	// this.Visual.addChild(this.DebugVis);
+
+	// Start idle animation
+	this.DoIdle();
 }
+
+GWeapon.prototype.SetOwner = function( Owner )
+{
+	this.Owner = Owner;
+};
+
+GWeapon.prototype.SetOpponent = function( Opponent )
+{
+	this.Opponent = Opponent;
+};
+
+GWeapon.prototype.CanAttack = function()
+{
+	return (!this.IsAttacking) && this.CoolDown <= 0;
+};
+
+GWeapon.OnFinishAttack = function( w )
+{
+	w.CoolDown = w.Config.CoolDown * 0.5 + Math.random() * w.Config.CoolDown;
+	w.IsAttacking = false;
+	w.DoIdle();
+};
+
+GWeapon.OnAttackOpponent = function( w )
+{
+	w.Opponent.ReceiveImpact( w.Strength );
+};
+
+GWeapon.prototype.DoAttack = function()
+{
+
+	console.log("Do Attack");
+
+	this.IsAttacking = true;
+
+	var sign = 1;
+	if (this.IsLeft)
+	{
+		sign = -1;
+	}
+
+	createjs.Tween.get(this.Visual, {}, null, true)
+		.to({rotation: sign * this.Config.ReadyAngle}, 400, createjs.Ease.cubicInOut) // get ready
+		.wait(200)
+		.to({rotation: sign * this.Config.AttackAngle}, 70, createjs.Ease.cubicIn) // attack
+		.call(GWeapon.OnAttackOpponent, [this])
+		.to({rotation: sign * 60}, 70, createjs.Ease.cubicIn) // bounce back
+		.wait(100)
+		.to({rotation: sign * 145}, 1000, createjs.Ease.cubicInOut) // return to idle
+		.call(GWeapon.OnFinishAttack, [this]);
+};
+
+GWeapon.prototype.DoIdle = function()
+{
+	console.log("Do Idle");
+
+	var sign = 1;
+
+	if (this.IsLeft)
+	{
+		sign = -1;
+	}
+
+	createjs.Tween.get(this.Visual, {loop: true}, null, true)
+		.to({rotation: 130 * sign}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
+		.to({rotation: (140 * sign + Math.random() * 10)}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
+		.to({rotation: (130 * sign + Math.random() * 10)}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
+		.to({rotation: (140 * sign + Math.random() * 10)}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
+		.to({rotation: (130 * sign + Math.random() * 10)}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
+		.to({rotation: (140 * sign + Math.random() * 10)}, 2000, createjs.Ease.cubicInOut)
+		.to({rotation: 130 * sign}, 2000 + Math.random() * 800, createjs.Ease.quadInOut);
+	// this.Visual.rotation += dt * 20;
+	/*
+	if (this.IsLeft)
+	{
+		this.Visual.rotation = -this.Config.BaseRotation;
+	}
+	else
+	{
+		this.Visual.rotation = this.Config.BaseRotation;
+	}
+	*/
+
+};
 
 /**
  * Ticks this worm and all its components
  */
-Worm.prototype.Tick = function (dt)
+GWeapon.prototype.Tick = function ( Worm, dt )
 {
-	var canFight = true;
-
-	// If the worm was hit and the target length is lower
-	if (!GMath.IsNearlyEqual(this.CurrentLength, this.TargetLength))
+	if (this.CoolDown > 0)
 	{
-		GMath.Lerp(this.CurrentLength, this.TargetLength, dt * GConfig.Worm.SinkingSpeed);
-		if (this.Body)
-		{
-			this.Body.SetLength(this.CurrentLength);
-		}
-		this.Body.IsSinking(true);
-		canFight = false;
-	}
-	else
-	{
-		this.Body.IsSinking(false);
+		this.CoolDown -= dt;
 	}
 
-	// If the worm is paralysed
-	if (this.Paralysed > 0)
+	if (!this.IsAttacking)
 	{
-		this.Paralysed -= dt;
-		canFight = false;
+		this.Visual.x = Worm.GetWeaponPositionX();
+		this.Visual.y = Worm.GetWeaponPositionY();
 	}
-	
-	// Try to fight
-	if (canFight)
-	{
-		this.Fight();
-	}
-
-	this.Weapon.Tick(dt);
-	this.Sole.Tick(dt);
-	this.Body.Tick(dt);
 };
 
 /**
  * Tries to fight with the weapon
  */
-Worm.prototype.Fight = function()
+GWeapon.prototype.Attack = function()
 {
-	if (this.Weapon)
+	if (this.CanAttack())
 	{
-		if (this.Weapon.CanAttack())
-		{
-			this.Weapon.Attack();
-		}
+		this.DoAttack();
 	}
 };
-
-/**
- * Sinks this Worm into the ground
- */
-Worm.prototype.Sink = function( impactVolume )
-{
-	var sinkImpact = impactVolume * GConfig.Worm.ImpactVolumeToSink;
-
-	this.TargetLength = GMath.Limit(this.TargetLength - impactVolume, 0, this.TargetLength);
-};
-
-/**
- * Paralyse the worm 
- */
-Worm.prototype.Paralyse = function( impactVolume )
-{
-	// Get the paralysed 
-	var paralysedTime = impactVolume * GConfig.Worm.ImpactVolumeToParalysedTime;
-
-	// limit the paralysed time
-	this.Paralysed = GMath.Limit(paralysedTime, GConfig.Worm.MinParalysedTime, GConfig.Worm.MaxParalysedTime);
-};
-
-/**
- * Called when an opponent hits this worm with its weapon.
- * @param Opponent:Worm	The opponent which executes the fight.
- */
-Worm.prototype.ReceiveImpact = function(Opponent)
-{
-	if (Opponent)
-	{
-		var impactVolume = 0;
-
-		// What is the strength of the opponents weapon
-		if (Opponent.Weapon)
-		{
-			impactVolume += Opponent.Weapon.GetStrength();
-		}
-
-		// Limit the impact using the sole
-		if (this.Sole)
-		{
-			impactVolume = this.Sole.LimitImpact(impactVolume);
-		}
-
-		this.Sink( impactVolume );
-		this.Paralyse( impactVolume );
-	}
-};
-

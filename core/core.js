@@ -98,12 +98,21 @@ GCore = (function(){
 	};
 
 	/**
-	 * Adds a DisplayObject on top of the stage
+	 * Adds a Visual on top of the stage
 	 */
-	core.AddDisplayObject = function( DisplayObject )
+	core.AddVisual = function( Visual )
 	{
-		var obj = stage.addChild( DisplayObject );
+		var obj = stage.addChild( Visual );
+		// Bug fix of library to ensure that the Visual is on top of the list.
 		stage.setChildIndex( obj, stage.getNumChildren()-1);
+	};
+
+	/**
+	 * Removes a Visual from the stage
+	 */
+	core.RemoveVisual = function( Visual )
+	{
+		stage.removeChild( Visual );
 	};
 
 	// ///////////////////////////////////////////////////
@@ -215,6 +224,8 @@ GCore = (function(){
 		{
 			game.Initialize();
 		}
+
+		createjs.Ticker.setFPS(60);
 
 		isInitialized = true;
 	}

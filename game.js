@@ -6,110 +6,44 @@
  * (c) Copyright 2015 Christoph Lipphart
  */
 
-GWorld = (function()
-{
-	var world = {};
-
-	var foreground;
-	var background;
-
-	var stuffToLoad = 2;
-
-	var onLoaded = null;
-
-	world.Floor = {
-		Y : 470,
-		LeftWormX : 305,
-		RightWormX : 540,
-	};
-
-	world.GameObjectsContainer = null;
-
-	/**
-	 * Called when images for the world are loaded
-	 */
-	function setupStage()
-	{
-		foreground.Shape.y = 600 - foreground.Image.height;
-
-		var displayObject = GCore.GetStage().addChild(background.Shape);
-		GCore.GetStage().setChildIndex( displayObject, GCore.GetStage().getNumChildren()-1);
-
-		world.GameObjectsContainer = new createjs.Container();
-
-		GCore.AddDisplayObject(background.Shape);
-		GCore.AddDisplayObject(world.GameObjectsContainer);
-		GCore.AddDisplayObject(foreground.Shape);
-	}
-
-	/**
-	 * Called when all resources for the world are loaded
-	 */
-	function loaded()
-	{
-		--stuffToLoad;
-		if (stuffToLoad <= 0)
-		{
-			setupStage();
-			if (onLoaded)
-			{
-				onLoaded();
-			}
-		}
-	}
-
-	function createImagePlane(Path)
-	{
-		var plane = {};
-
-		var img = new Image();
-		img.onload = loaded;
-		img.src = Path;
-		var shape = new createjs.Bitmap(img);
-
-		plane.Image = img;
-		plane.Shape = shape;
-
-		return plane;
-	}
-
-	world.Construct = function( OnLoaded )
-	{
-		onLoaded = OnLoaded;
-		foreground = createImagePlane("assets/world/foreground.png");
-		background = createImagePlane("assets/world/background.jpg");
-	};
-
-	return world;
-
-})();
-
 GImages = (function()
 {
 	var images = {};
 
-	var lefti = null;
-	var schleimi = null;
-	var starki = null;
+	images.Lefti = null;
+	images.Schleimi = null;
+	images.Starki = null;
 
-	var stuffToLoad = 0;
+	images.Background = null;
+	images.Foreground = null;
+
+	stuffToLoad = 0;
 
 	onLoaded = null;
 
 	function loaded()
 	{
-		console.log("Image loaded");
 		--stuffToLoad;
 		if (stuffToLoad <= 0 && onLoaded)
 		{
+			console.log("Images loaded.");
 			onLoaded();
 		}
 	}
 
+	function error()
+	{
+		console.log("Error in loading an image.");
+		loaded();
+	}
+
 	function createImage(Path)
 	{
+		++stuffToLoad;
+
 		var img = new Image();
 		img.onload = loaded;
+		img.onerror = loaded;
 		img.src = Path;
 		return img;
 	}
@@ -118,31 +52,39 @@ GImages = (function()
 	{
 		onLoaded = OnLoaded;
 
-		stuffToLoad = 3;
-		lefti		= createImage("assets/worm/Lefti.png");
-		schleimi	= createImage("assets/worm/Schleimi.png");
-		starki		= createImage("assets/worm/Starki.png");
-	};
+		stuffToLoad = 1; // prevent onLoaded call before all images are ready
 
-	images.GetLefti = function()
-	{
-		return lefti;
-	};
+		images.Lefti		= createImage("assets/worm/Lefti.png");
+		images.Schleimi		= createImage("assets/worm/Schleimi.png");
+		images.Starki		= createImage("assets/worm/Starki.png");
 
-	images.GetSchleimi = function()
-	{
-		return schleimi;
-	};
+		images.Lefti_socle		= createImage("assets/worm/Lefti-Socle.png");
+		images.Schleimi_socle	= createImage("assets/worm/Schleimi-Socle.png");
+		images.Starki_socle		= createImage("assets/worm/Starki-Socle.png");
 
-	images.GetStarki = function()
-	{
-		return starki;
+		images.Background	= createImage("assets/world/background.jpg");
+		images.Foreground	= createImage("assets/world/foreground.png");
+		images.Lamp			= createImage("assets/world/small-lamp.png");
+
+		images.Hammer	= createImage("assets/weapons/hammer.png");
+		images.Schlag	= createImage("assets/weapons/schlag.png");
+		images.Stock	= createImage("assets/weapons/stock.png");
+
+		// HUD
+		images.BetBtns		= createImage("assets/hud/bet-buttons.png");
+		images.MoneyBtns	= createImage("assets/hud/money-change-buttons.png");
+		images.CurrentBet	= createImage("assets/hud/current-bet.png");
+		images.WormBet		= createImage("assets/hud/wormbet.png");
+		images.YourMoney	= createImage("assets/hud/yourmoney.png");
+		images.Multiplier	= createImage("assets/hud/multiplier.png");
+
+		images.Stars		= createImage("assets/fx/stars.png");
+
+		loaded(); // clear the extra token
 	};
 
 	return images;
-
 })();
-
 
 GGame = (function()
 {
@@ -151,26 +93,101 @@ GGame = (function()
 	var LinkiBody = null;
 
 	var leftWorm = null;
-	var rightWorm = null;
+	var leftWeapon = null;
 
-	var stuffToLoad = 2;
+	var rightWorm = null;
+	var rightWeapon = null;
+
+	var stuffToLoad = 1;
+
+	var wormWhoWantsToAttack = null;
+
+	game.IsSomeoneAttacking = false;
+
+	var IsGameOver = false;
+
+	function GetRandomWeapon(IsLeft)
+	{
+		var x = Math.random();
+		if (x < 0.3333333)
+		{
+			return GCreator.CreateHammer(IsLeft);
+		}
+		else if (x < 0.666666)
+		{
+			return GCreator.CreateStock(IsLeft);
+		}
+		else
+		{
+			return GCreator.CreateSchlag(IsLeft);
+		}
+	}
+
+	function GetRandomWorm(IsLeft, Weapon)
+	{
+		var x = Math.random();
+		if (x < 0.3333333)
+		{
+			return GCreator.CreateStarki(IsLeft, false, Weapon);
+		}
+		else if (x < 0.666666)
+		{
+			return GCreator.CreateSchleimi(IsLeft, false, Weapon);
+		}
+		else
+		{
+			return GCreator.CreateLefti(IsLeft, false, Weapon);
+		}
+	}
+
+	game.GameOver = function( looser )
+	{
+		GHud.EarnMoney( looser != leftWorm );
+		IsGameOver = true;
+	};
+
+	game.InitializeRound = function()
+	{
+		if (rightWorm)
+		{
+			rightWorm.Destruct();
+		}
+		if (leftWorm)
+		{
+			leftWorm.Destruct();
+		}
+		rightWeapon = GetRandomWeapon(false);
+		rightWorm = GetRandomWorm(false, rightWeapon);
+		
+		leftWeapon = GetRandomWeapon(true);
+		leftWorm = GetRandomWorm(true, leftWeapon);
+
+		// Initialize weapons
+		leftWeapon.SetOwner(leftWorm);
+		leftWeapon.SetOpponent(rightWorm);
+		rightWeapon.SetOwner(rightWorm);
+		rightWeapon.SetOpponent(leftWorm);
+	};
+
+	function setupGame()
+	{
+		// create world
+		GWorld.Construct();
+
+		// Create HUD
+		GHud.Construct();
+		
+		game.InitializeRound();
+
+		GCore.Start();
+	}
 
 	function loaded()
 	{
 		--stuffToLoad;
 		if (stuffToLoad <= 0)
 		{
-			var bodyL = new GBody(GImages.GetSchleimi(), -10, false);
-			leftWorm = new Worm(bodyL);
-			
-			GWorld.GameObjectsContainer.addChild(bodyL.Shape);
-
-			var bodyR = new GBody(GImages.GetStarki(), -10, true);
-			rightWorm = new Worm(bodyR);
-
-			GWorld.GameObjectsContainer.addChild(bodyR.Shape);
-
-			GCore.Start();
+			setupGame();
 		}
 	}
 
@@ -179,18 +196,28 @@ GGame = (function()
 		GImages.Construct( loaded );
 	}
 
-	function createWorld()
+	game.IsSomeoneAttacking = function()
 	{
-		GWorld.Construct( loaded );
-	}
+		return (rightWeapon.IsAttacking || leftWeapon.IsAttacking);
+	};
 
 	/**
 	 * Initializes the game
 	 */
 	game.Initialize = function()
 	{
-		createWorld();
 		loadImages();
+	};
+
+	game.WormFinished = function( worm )
+	{
+		if (leftWorm === worm) leftWorm = null;
+		if (rightWorm === worm) rightWorm = null;
+
+		if (leftWorm === null && rightWorm === null)
+		{
+			game.InitializeRound();
+		}
 	};
 
 	/**
@@ -199,8 +226,49 @@ GGame = (function()
 	 */
 	game.Update = function(dt)
 	{
-		leftWorm.Tick(dt);
-		rightWorm.Tick(dt);
+		if (IsGameOver)
+		{
+			leftWorm.DoEnd();
+			rightWorm.DoEnd();
+			IsGameOver = false;
+		}
+
+		if (leftWorm)	leftWorm.Tick(dt);
+		if (rightWorm)	rightWorm.Tick(dt);
+
+		if (wormWhoWantsToAttack)
+		{
+			wormWhoWantsToAttack.DoAttack();
+			wormWhoWantsToAttack = null;
+		}
+
+
+	};
+
+	/**
+	 * Gets the opponent worm to provided worm.
+	 * If it is the left worm, return the right worm 
+	 * and vice versa.
+	 */
+	game.GetOpponent = function( worm )
+	{
+		if (worm === leftWorm) return rightWorm;
+		if (worm === rightWorm) return leftWorm;
+		return null;
+	};
+
+	game.PushWishToAttack = function( worm )
+	{
+		if (game.IsSomeoneAttacking()) return;
+
+		if (wormWhoWantsToAttack === null)
+		{
+			wormWhoWantsToAttack = worm;
+		}
+		else if (Math.random() > 0.5)
+		{
+			wormWhoWantsToAttack = worm;
+		}
 	};
 
 	return game;
