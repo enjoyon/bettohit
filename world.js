@@ -21,6 +21,7 @@ GWorld = (function()
 	var lamp;
 
 	world.GameObjectsContainer = null;
+	world.FX = null;
 
 	function setupLamp()
 	{
@@ -40,8 +41,9 @@ GWorld = (function()
 	{
 		// add DisplayObjects to canvas
 		GCore.AddVisual(background.Visual);
-		GCore.AddVisual(world.GameObjectsContainer);
 		GCore.AddVisual(lamp.Visual);
+		GCore.AddVisual(world.GameObjectsContainer);
+		GCore.AddVisual(world.FX);
 		GCore.AddVisual(foreground.Visual);
 
 		setupLamp();
@@ -79,6 +81,7 @@ GWorld = (function()
 		lamp		= createImagePlane(GImages.Lamp);
 
 		world.GameObjectsContainer = new createjs.Container();
+		world.FX = new createjs.Container();
 
 		setupStage();
 	};

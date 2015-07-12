@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="game">
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="css/style.css">
@@ -13,10 +13,11 @@
 	<script type="text/javascript" src="libs/soundjs-0.6.1.combined.js"></script>
 	<script type="text/javascript" src="libs/tweenjs-0.6.1.combined.js"></script>	
 
-	<!-- Main Game -->
+	<!-- Core -->
 	<script type="text/javascript" src="config.js"></script>
 	<script type="text/javascript" src="core/core.js"></script>
 	<script type="text/javascript" src="core/math.js"></script>
+	<script type="text/javascript" src="core/particles.js"></script>
 
 	<!-- Entities -->
 	<script type="text/javascript" src="entities/worm.js"></script>
@@ -27,19 +28,30 @@
 
 	<!-- Main Game -->
 	<script type="text/javascript" src="hud.js"></script>
+	<script type="text/javascript" src="sound.js"></script>
 	<script type="text/javascript" src="world.js"></script>
 	<script type="text/javascript" src="game.js"></script>
 
 </head>
 <body>
-	<header>
-		<h1>BetToHit</h1>
-	</header>
-	<div id="center-canvas">
-		<canvas id="game-canvas" width="800" height="600" />
+	<div id="fullwidth">
+		<div id="center-box" width="800">
+			<header>
+			<p class="logo">
+				<img class="logo" src="assets/html/logo.png" />
+			</p>
+			<p class="right-top-btns">
+				<input class="mute-btn" type="button" value="Mute" onclick="createjs.Sound.muted = !createjs.Sound.muted; this.value=(createjs.Sound.muted?'Mute Off':'Mute');" />
+			</p>
+			</header>
+			<div id="canvas-border">
+				<canvas id="game-canvas" width="800" height="600"></canvas>
+			</div>
+			<footer>
+				<a href="http://www.itengy.com" title="Online Portfolio - itengy.com">© 2015 Christoph Lipphart.</a> All rights reserved. | <a href="readme.html" title="Readme">More Information</a>
+				<p class="readme-logo"><a href="readme.html" title="Readme"><img src="assets/html/readme.png"></a></p>
+			</footer>
+		</div>
 	</div>
-	<footer>
-		© 2015 Christoph Lipphart. All rights reserved.
-	</footer>
 </body>
 </html>

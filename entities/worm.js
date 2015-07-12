@@ -53,15 +53,34 @@ Worm.OnEndFinished = function( self )
 	GGame.WormFinished( self );
 };
 
-Worm.prototype.DoEnd = function()
+Worm.PlayParticles = function( self )
+{
+	GParticles.Win( self.GetParticlesForWinX(), GConfig.World.WormGroundY );
+};
+
+Worm.prototype.DoEnd = function(IsWinner)
 {
 	this.IsReady = false;
 
 	var finalPosition = 600 + this.Body.Height;
 
-	createjs.Tween.get(this.Body.Visual, {}, true)
-		.to({y : finalPosition}, 500, createjs.Ease.quadIn)
-		.call(Worm.OnEndFinished, [this]);
+	if (IsWinner)
+	{
+		var Y = GConfig.World.WormGroundY - this.Body.Image.height + this.Config.OffsetY;
+
+		createjs.Tween.get(this.Body.Visual, {}, true)
+			.to({y : Y}, 500, createjs.Ease.quadInOut)
+			.call(Worm.PlayParticles, [this])
+			.wait(1500)
+			.to({y : finalPosition}, 700, createjs.Ease.quadIn)
+			.call(Worm.OnEndFinished, [this]);
+	}
+	else
+	{
+		createjs.Tween.get(this.Body.Visual, {}, true)
+			.to({y : finalPosition}, 700, createjs.Ease.quadIn)
+			.call(Worm.OnEndFinished, [this]);	
+	}
 };
 
 Worm.prototype.DoIdle = function()
@@ -76,6 +95,35 @@ Worm.prototype.DoIdle = function()
 	createjs.Tween.get(this.Body.Visual, {}, true)
 		.to({y : finalPosition}, 2000, createjs.Ease.quadInOut)
 		.call(Worm.OnIdleFinished, [this]);
+};
+
+Worm.prototype.GetParticlesForWinX = function()
+{
+	if (this.IsLeft)
+	{
+		return this.Body.Visual.x + this.Body.Image.width * 0.5;
+	}
+	else
+	{
+		return this.Body.Visual.x - this.Body.Image.width * 0.5;
+	}
+};
+
+Worm.prototype.GetParticlesX = function()
+{
+	if (this.IsLeft)
+	{
+		return this.Body.Visual.x + this.Body.Image.width * 0.8;
+	}
+	else
+	{
+		return this.Body.Visual.x - this.Body.Image.width * 0.8;
+	}
+};
+
+Worm.prototype.GetParticlesY = function()
+{
+	return this.Body.Visual.y + this.Config.DeathY;
 };
 
 Worm.prototype.GetWeaponPositionX = function()
@@ -234,5 +282,7 @@ Worm.prototype.ReceiveImpact = function( ImpactVolume )
 	}
 
 	this.Sink( ImpactVolume );
+
+	GParticles.Attack(this.GetParticlesX(), this.GetParticlesY(), ImpactVolume);
 };
 

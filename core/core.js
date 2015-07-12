@@ -17,7 +17,8 @@ GCore = (function(){
 	var interval = null;
 	var lastUpdate = 0;
 
-	var canvasOuter = null;
+	var fullwidthBox = null;
+	var centerBox = null;
 	var canvas = null;
 
 	var stage = null;
@@ -186,10 +187,10 @@ GCore = (function(){
 	 */
 	function centerCanvas()
 	{
-		if (canvas && canvasOuter)
+		if (centerBox && fullwidthBox)
 		{
-			var leftMarginToCenter = (canvasOuter.innerWidth() - canvas.width()) * 0.5;
-			canvas.css("margin-left", leftMarginToCenter);
+			var marginleft = (fullwidthBox.innerWidth() - canvas.width()) * 0.5;
+			centerBox.css("margin-left", marginleft);
 		}
 	}
 
@@ -215,7 +216,8 @@ GCore = (function(){
 		stage = new createjs.Stage("game-canvas");
 
 		// find canvas
-		canvasOuter = $("#center-canvas");
+		fullwidthBox = $("#fullwidth");
+		centerBox = $("#center-box");
 		canvas = $("#game-canvas");
 
 		centerCanvas();

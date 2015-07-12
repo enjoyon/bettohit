@@ -114,6 +114,8 @@ GConfig = (function()
 		IsBackground : true,
 		AttackAngle : 50,
 		ReadyAngle : 200,
+		Sound: "hammer",
+		SoundDelay: 200,
 	};
 
 	config.Schlag =
@@ -128,6 +130,8 @@ GConfig = (function()
 		IsBackground : false,
 		AttackAngle : 20,
 		ReadyAngle : 155,
+		Sound: "schlag",
+		SoundDelay: 50,
 	};
 
 	config.Stock =
@@ -142,6 +146,8 @@ GConfig = (function()
 		IsBackground : false,
 		AttackAngle : 10,
 		ReadyAngle : 150,
+		Sound: "stock",
+		SoundDelay: 200,
 	};
 
 	return config;

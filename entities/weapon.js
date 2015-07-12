@@ -13,10 +13,6 @@ function GWeapon(Image, Config, IsLeft)
 	this.Visual = new createjs.Container();
 	this.ImageVisual = new createjs.Bitmap(Image);
 	
-
-
-	
-
 	this.Visual.addChild( this.ImageVisual );
 
 	if (IsLeft)
@@ -38,6 +34,9 @@ function GWeapon(Image, Config, IsLeft)
 	this.Strength = Config.Strength;
 	this.Config = Config;
 	this.IsLeft = IsLeft;
+	this.Sound = Config.Sound;
+
+	this.SoundPPC = new createjs.PlayPropsConfig().set({delay: Config.SoundDelay});
 
 	// Weapon Attacking
 	this.CoolDown = 1;
@@ -85,6 +84,7 @@ GWeapon.OnAttackOpponent = function( w )
 
 GWeapon.prototype.DoAttack = function()
 {
+	createjs.Sound.play(this.Sound, this.SoundPPC);
 
 	console.log("Do Attack");
 
@@ -150,11 +150,8 @@ GWeapon.prototype.Tick = function ( Worm, dt )
 		this.CoolDown -= dt;
 	}
 
-	if (!this.IsAttacking)
-	{
-		this.Visual.x = Worm.GetWeaponPositionX();
-		this.Visual.y = Worm.GetWeaponPositionY();
-	}
+	this.Visual.x = Worm.GetWeaponPositionX();
+	this.Visual.y = Worm.GetWeaponPositionY();
 };
 
 /**

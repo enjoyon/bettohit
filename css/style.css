@@ -6,9 +6,30 @@
  * (c) Copyright 2015 Christoph Lipphart
  */
 
-body
+.game
 {
 	background-color: black;
+}
+
+header
+{
+	text-align: center;
+} 
+
+img.logo
+{
+	position: relative;
+}
+
+p.logo
+{
+	height: 50px;
+	margin: 0;
+}
+
+#fullwidth
+{
+	width: 100%;
 }
 
 #game-canvas 
@@ -16,15 +37,177 @@ body
 	width: 800px;
 	height: 600px;
 	background-color: black;
+	margin: 16px;
+	border-radius: 5px;
 }
 
-#center-canvas
+#canvas-border
 {
-	width: 100%;
+	width: 832px;
+	background: url("../assets/html/border.png");	
+	background-repeat: no-repeat;
+}
+
+#center-box
+{
+	width: 832px;
+	margin: 0 auto;
 }
 
 #background {
 	background-color: white;
 	width: 100%;
 	height: 100%;
+}
+
+.mute-btn {
+	background: none;
+	color: #DDD;
+	cursor: pointer;
+	border: none;
+	text-align: center;
+}
+
+.right-top-btns {
+	text-align: right;
+	margin: 0;
+}
+
+footer
+{
+	text-align: center;
+	color: #666;
+	font-family: arial;
+	font-size: 10px;
+}
+
+footer a:link,
+footer a:visited 
+{
+	color: #666;
+	text-decoration: none;
+}
+
+footer a:hover,
+footer a:active {
+	text-decoration: underline;
+	color: white;
+}
+
+body
+{
+	font-family: arial;
+	color: #CCC;
+}
+
+.readme {
+	background-color: black;
+}
+
+.readme #center-box {
+	background-color: #022205;
+	border-radius: 30px;
+	padding: 25px;
+	box-shadow: -5px -5px 10px yellow inset;
+	border: 3px solid #150;
+}
+
+h1
+{
+	color: yellow;
+	text-transform: uppercase;
+}
+
+h2
+{
+	text-align: left;
+	margin-left: 0px;
+	font-size: 16px;
+	color: #FF1;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	border-left: 5px solid yellow;
+	padding-left: 15px;
+	text-transform: uppercase;
+}
+
+strong
+{
+	color: #CC3;
+}
+
+.readme section {
+	text-align: center;
+	margin-bottom: 45px;
+}
+
+.readme section p {
+	text-align: left;
+	margin: 20px;
+	margin-top: 0px;
+	font-size: 14px;
+	font-family: monospace;
+}
+
+
+.readme section p a:link,
+.readme section p a:visited
+{
+	color: #888;
+	font-size: 12px;
+}
+
+.readme section p a:hover,
+.readme section p a:active
+{
+	color: white;
+
+}
+
+.making-of img
+{
+	height: 90px;
+	border-radius: 10px;
+}
+
+.readme section p.making-of {
+	text-align: center;
+}
+
+div.play-btn
+{
+	display: inline-block;
+	width: 300px;
+	height: 99px;
+	background: url("../assets/html/play.png");
+	cursor: pointer;
+}
+
+div.play-btn:hover
+{
+	background: url("../assets/html/play-hover.png?i=3");
+}
+
+div.play-btn span {
+	display: none;
+}
+
+.game .readme-logo
+{
+	text-align: right;
+}
+.game .readme-logo img
+{
+	width: 100px;
+	position: relative;
+	top: -28px;
+	left:0px;
+	cursor: pointer;
+}
+
+.game .readme-logo img:hover
+{
+	width: 120px;
+	top: -28px;
+	left:7px;
 }

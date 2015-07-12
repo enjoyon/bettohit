@@ -48,7 +48,7 @@ GImages = (function()
 		return img;
 	}
 
-	images.Construct = function( OnLoaded )
+	images.Initialize = function( OnLoaded )
 	{
 		onLoaded = OnLoaded;
 
@@ -78,6 +78,7 @@ GImages = (function()
 		images.YourMoney	= createImage("assets/hud/yourmoney.png");
 		images.Multiplier	= createImage("assets/hud/multiplier.png");
 
+		// FX
 		images.Stars		= createImage("assets/fx/stars.png");
 
 		loaded(); // clear the extra token
@@ -98,13 +99,15 @@ GGame = (function()
 	var rightWorm = null;
 	var rightWeapon = null;
 
-	var stuffToLoad = 1;
+	var stuffToLoad = 2;
 
 	var wormWhoWantsToAttack = null;
 
 	game.IsSomeoneAttacking = false;
 
 	var IsGameOver = false;
+	var messageField = null;
+	var Looser = null;
 
 	function GetRandomWeapon(IsLeft)
 	{
@@ -143,6 +146,7 @@ GGame = (function()
 	game.GameOver = function( looser )
 	{
 		GHud.EarnMoney( looser != leftWorm );
+		Looser = looser;
 		IsGameOver = true;
 	};
 
@@ -174,26 +178,39 @@ GGame = (function()
 		// create world
 		GWorld.Construct();
 
+		// create particle system
+		GParticles.Construct();
+
 		// Create HUD
 		GHud.Construct();
 		
 		game.InitializeRound();
 
 		GCore.Start();
+
+		var ppc = new createjs.PlayPropsConfig().set({loop: -1});
+		createjs.Sound.play("music", ppc);
 	}
 
 	function loaded()
 	{
 		--stuffToLoad;
-		if (stuffToLoad <= 0)
+		if (stuffToLoad == 0)
 		{
+			GCore.GetStage().removeChild(messageField);
+			messageField = null;
 			setupGame();
 		}
 	}
 
 	function loadImages()
 	{
-		GImages.Construct( loaded );
+		GImages.Initialize( loaded );
+	}
+
+	function loadSound()
+	{
+		GSound.Initialize( loaded );
 	}
 
 	game.IsSomeoneAttacking = function()
@@ -206,7 +223,18 @@ GGame = (function()
 	 */
 	game.Initialize = function()
 	{
+		// a message on our stage that we use to let the user know what is going on.
+		messageField = new createjs.Text("Loading", "bold 24px Arial", "#FFFFFF");
+		messageField.maxWidth = 1000;
+		messageField.textAlign = "center";  // NOTE this puts the registration point of the textField at the center
+		messageField.x = 400;
+		messageField.y = 300;
+		GCore.GetStage().addChild(messageField);
+		//update the stage to show text
+		GCore.GetStage().update();
+
 		loadImages();
+		loadSound();
 	};
 
 	game.WormFinished = function( worm )
@@ -228,13 +256,15 @@ GGame = (function()
 	{
 		if (IsGameOver)
 		{
-			leftWorm.DoEnd();
-			rightWorm.DoEnd();
+			leftWorm.DoEnd(Looser !== leftWorm);
+			rightWorm.DoEnd(Looser !== rightWorm);
 			IsGameOver = false;
 		}
 
 		if (leftWorm)	leftWorm.Tick(dt);
 		if (rightWorm)	rightWorm.Tick(dt);
+
+		GParticles.Tick(dt);
 
 		if (wormWhoWantsToAttack)
 		{
