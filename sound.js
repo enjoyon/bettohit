@@ -12,20 +12,23 @@ GSound = (function()
 	var onLoaded = null;
 	var soundQueue = null;
 
+	s.stuffToLoad = 4;
+
 	var assetsPath = "assets/audio/";
 	var sounds = [
-		{src: "Music.ogg", id: "music"},
-		{src: "Hammer.wav", id: "hammer"},
-		{src: "Schlag.wav", id: "schlag"},
-		{src: "Stock.wav", id: "stock"},
+		{src: "Music.mp3", id: "music"},
+		{src: "Hammer.mp3", id: "hammer"},
+		{src: "Schlag.mp3", id: "schlag"},
+		{src: "Stock.mp3", id: "stock"},
 	];
 
 	function OnSoundLoaded()
 	{
-		soundQueue = null;
-		if (onLoaded)
+		s.stuffToLoad = s.stuffToLoad - 1;
+		if (s.stuffToLoad == 0)
 		{
-			onLoaded();
+			soundQueue = null;
+			if (onLoaded) onLoaded();
 		}
 	}
 

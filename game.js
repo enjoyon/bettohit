@@ -23,7 +23,7 @@ GImages = (function()
 
 	function loaded()
 	{
-		--stuffToLoad;
+		stuffToLoad = stuffToLoad - 1;
 		if (stuffToLoad <= 0 && onLoaded)
 		{
 			console.log("Images loaded.");
@@ -99,7 +99,7 @@ GGame = (function()
 	var rightWorm = null;
 	var rightWeapon = null;
 
-	var stuffToLoad = 2;
+	game.stuffToLoad = 2;
 
 	var wormWhoWantsToAttack = null;
 
@@ -194,8 +194,8 @@ GGame = (function()
 
 	function loaded()
 	{
-		--stuffToLoad;
-		if (stuffToLoad == 0)
+		game.stuffToLoad = game.stuffToLoad - 1;
+		if (game.stuffToLoad == 0)
 		{
 			GCore.GetStage().removeChild(messageField);
 			messageField = null;
