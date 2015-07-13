@@ -23,19 +23,25 @@ GWorld = (function()
 	world.GameObjectsContainer = null;
 	world.FX = null;
 
+	/**
+	 * Positions the lamp
+	 */
 	function setupLamp()
 	{
 		lamp.Visual.x = 400 - (lamp.Image.width * 0.5) + GConfig.World.LampOffsetX;
 		lamp.Visual.y = GConfig.World.LampOffsetY;
 	}
 
+	/**
+	 * Positions the foreground
+	 */
 	function setupForeground()
 	{
 		foreground.Visual.y = 600 - foreground.Image.height;
 	}
 
 	/**
-	 * Called when images for the world are loaded
+	 * Adds the created Visuals to the stage and positions it.
 	 */
 	function setupStage()
 	{
@@ -50,6 +56,11 @@ GWorld = (function()
 		setupForeground();
 	}
 
+	/**
+	 * Creates a DisplayObject/Visual for the stage of provided Image.
+	 * 
+	 * @param {Image} img.
+	 */
 	function createImagePlane(Img)
 	{
 		var plane = {};
@@ -62,6 +73,9 @@ GWorld = (function()
 		return plane;
 	}
 
+	/**
+	 * Adds the provided Visual on top of the stage.
+	 */
 	world.AddGameObjectVisual = function( Visual )
 	{
 		var obj = world.GameObjectsContainer.addChild(Visual);
@@ -69,11 +83,18 @@ GWorld = (function()
 		world.GameObjectsContainer.setChildIndex( obj, world.GameObjectsContainer.getNumChildren()-1);
 	};
 
+	/**
+	 * Removes the provided Visual from the stage.
+	 */
 	world.RemoveGameObjectVisual = function( Visual )
 	{
 		world.GameObjectsContainer.removeChild(Visual);
 	};
 
+	/**
+	 * Creates the world
+	 * @attention Call it only if the images for the world are loaded!
+	 */
 	world.Construct = function()
 	{
 		foreground	= createImagePlane(GImages.Foreground);

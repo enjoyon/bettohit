@@ -5,6 +5,7 @@
  * Created by Christoph Lipphart on 11th July 2015
  * (c) Copyright 2015 Christoph Lipphart
  */
+ 
 GSound = (function()
 {
 	var s = {};
@@ -22,6 +23,9 @@ GSound = (function()
 		{src: "Stock.mp3", id: "stock"},
 	];
 
+	/**
+	 * Called if a sound file was loaded
+	 */
 	function OnSoundLoaded()
 	{
 		s.stuffToLoad = s.stuffToLoad - 1;
@@ -32,12 +36,22 @@ GSound = (function()
 		}
 	}
 
+	/**
+	 * Called if a sound file cannot be loaded
+	 */
 	function OnFileError(evt)
 	{
 		console.log("preload error ", evt);
 		OnSoundLoaded();
 	}
 
+	/**
+	 * Setups the sound module and starts to load
+	 * the required audio files.
+	 * 
+	 * @param {function} loaded A callback function which will be called
+	 *  if all audio files are loaded.
+	 */
 	s.Initialize = function( loaded )
 	{
 		onLoaded = loaded;

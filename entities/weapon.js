@@ -55,21 +55,35 @@ function GWeapon(Image, Config, IsLeft)
 	this.DoIdle();
 }
 
+/**
+ * Specifies the owner of this weapon
+ */
 GWeapon.prototype.SetOwner = function( Owner )
 {
 	this.Owner = Owner;
 };
 
+/**
+ * Specifies the opponent to the owner of this weapon
+ */
 GWeapon.prototype.SetOpponent = function( Opponent )
 {
 	this.Opponent = Opponent;
 };
 
+/**
+ * Determines if this weapon can attack currently.
+ * Weapons can only attack if they are not currently
+ * attacking or are in its cool down state.
+ */
 GWeapon.prototype.CanAttack = function()
 {
 	return (!this.IsAttacking) && this.CoolDown <= 0;
 };
 
+/**
+ * Callback when the weapon finished its attack.
+ */
 GWeapon.OnFinishAttack = function( w )
 {
 	w.CoolDown = w.Config.CoolDown * 0.5 + Math.random() * w.Config.CoolDown;
@@ -77,11 +91,17 @@ GWeapon.OnFinishAttack = function( w )
 	w.DoIdle();
 };
 
+/**
+ * Callback when the weapon should attack the opponent.
+ */
 GWeapon.OnAttackOpponent = function( w )
 {
 	w.Opponent.ReceiveImpact( w.Strength );
 };
 
+/**
+ * Executes an attack of the weapon.
+ */
 GWeapon.prototype.DoAttack = function()
 {
 	createjs.Sound.play(this.Sound, this.SoundPPC);
@@ -107,12 +127,16 @@ GWeapon.prototype.DoAttack = function()
 		.call(GWeapon.OnFinishAttack, [this]);
 };
 
+/**
+ * Starts an idle animation for the weapon
+ */
 GWeapon.prototype.DoIdle = function()
 {
 	console.log("Do Idle");
 
 	var sign = 1;
 
+	// adjust the angle of the weapon for left and right
 	if (this.IsLeft)
 	{
 		sign = -1;
@@ -126,17 +150,6 @@ GWeapon.prototype.DoIdle = function()
 		.to({rotation: (130 * sign + Math.random() * 10)}, 2000 + Math.random() * 800, createjs.Ease.quadInOut)
 		.to({rotation: (140 * sign + Math.random() * 10)}, 2000, createjs.Ease.cubicInOut)
 		.to({rotation: 130 * sign}, 2000 + Math.random() * 800, createjs.Ease.quadInOut);
-	// this.Visual.rotation += dt * 20;
-	/*
-	if (this.IsLeft)
-	{
-		this.Visual.rotation = -this.Config.BaseRotation;
-	}
-	else
-	{
-		this.Visual.rotation = this.Config.BaseRotation;
-	}
-	*/
 
 };
 

@@ -6,10 +6,8 @@
  * (c) Copyright 2015 Christoph Lipphart
  */
 
-
 /**
- * Creates a new Worm
- * @param Body:GBody the body of the worm
+ * Creates a new Socle
  */
 function GSocle(Image, Damping, Config, IsLeft)
 {
@@ -30,11 +28,20 @@ function GSocle(Image, Damping, Config, IsLeft)
 	}
 }
 
+/**
+ * Ticks the socle.
+ * @param {Number} dt Delta time in seconds
+ */
 GSocle.prototype.Tick = function(dt)
 {
-
+	// Nothing to do here
 };
 
+/**
+ * Limits the impact of the weapon.
+ * @param {Number} Impact The impact volume of the current attack.
+ * @return The reduced impact volume.
+ */
 GSocle.prototype.LimitImpact = (function()
 {
 	var LuckyArray = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];

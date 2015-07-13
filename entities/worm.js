@@ -41,11 +41,17 @@ function Worm(Body, Socle, Weapon, Config, IsLeft)
 	this.DoIdle();
 }
 
+/**
+ * Called when the initialize animation was played.
+ */
 Worm.OnIdleFinished = function( self )
 {
 	self.IsReady = true;
 };
 
+/**
+ * Called when the finalize animation was played.
+ */
 Worm.OnEndFinished = function( self )
 {
 	self.Destruct();
@@ -53,11 +59,20 @@ Worm.OnEndFinished = function( self )
 	GGame.WormFinished( self );
 };
 
+/**
+ * Creates a particle fountain.
+ * @param {Worm} self The worm which should has a winning fountain.
+ */
 Worm.PlayParticles = function( self )
 {
 	GParticles.Win( self.GetParticlesForWinX(), GConfig.World.WormGroundY );
 };
 
+/**
+ * Plays the finalize animation.
+ * 
+ * @param {boolean} IsWinner, true if this worm is the winner of the round
+ */
 Worm.prototype.DoEnd = function(IsWinner)
 {
 	this.IsReady = false;
@@ -83,6 +98,9 @@ Worm.prototype.DoEnd = function(IsWinner)
 	}
 };
 
+/**
+ * Plays the initialize animation.
+ */
 Worm.prototype.DoIdle = function()
 {
 	this.IsReady = false;
@@ -97,6 +115,9 @@ Worm.prototype.DoIdle = function()
 		.call(Worm.OnIdleFinished, [this]);
 };
 
+/**
+ * Gets the X location for the particle fountain.
+ */
 Worm.prototype.GetParticlesForWinX = function()
 {
 	if (this.IsLeft)
@@ -109,6 +130,9 @@ Worm.prototype.GetParticlesForWinX = function()
 	}
 };
 
+/**
+ * Gets the Y location for the particle fountain.
+ */
 Worm.prototype.GetParticlesX = function()
 {
 	if (this.IsLeft)
@@ -121,11 +145,17 @@ Worm.prototype.GetParticlesX = function()
 	}
 };
 
+/**
+ * Gets the X location for the particle attack effect.
+ */
 Worm.prototype.GetParticlesY = function()
 {
 	return this.Body.Visual.y + this.Config.DeathY;
 };
 
+/**
+ * Gets the X location for the weapon
+ */
 Worm.prototype.GetWeaponPositionX = function()
 {
 	if (this.IsLeft)
@@ -138,11 +168,17 @@ Worm.prototype.GetWeaponPositionX = function()
 	}
 };
 
+/**
+ * Gets the Y location for the weapon
+ */
 Worm.prototype.GetWeaponPositionY = function()
 {
 	return this.Body.Visual.y + this.Body.Image.height * 0.5 + this.Config.WeaponOffsetY;
 };
 
+/**
+ * Removes all Visuals of the Worm from the stage
+ */
 Worm.prototype.Destruct = function()
 {
 	if (this.Body)
@@ -161,6 +197,8 @@ Worm.prototype.Destruct = function()
 
 /**
  * Ticks this worm and all its components
+ * 
+ * @param {Number} dt Delta time in seconds.
  */
 Worm.prototype.Tick = function (dt)
 {
@@ -206,6 +244,9 @@ Worm.prototype.Tick = function (dt)
 	}
 };
 
+/**
+ * Determines if this Worm can attack currently.
+ */
 Worm.prototype.CanAttack = function()
 {
 	return (this.IsReady && (!this.IsSinking));
@@ -233,13 +274,17 @@ Worm.prototype.DoAttack = function()
 	}
 };
 
+/**
+ * Determines if this Worm sinking animation is finished.
+ * Happens after an attack.
+ */
 Worm.OnSinkingFinished = function( self )
 {
 	self.IsSinking = false;
 };
 
 /**
- * Sinks this Worm into the ground
+ * Sinks this Worm into the ground.
  */
 Worm.prototype.Sink = function( impactVolume )
 {

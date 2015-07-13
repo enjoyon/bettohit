@@ -26,6 +26,9 @@ GMath = (function()
 		return value;
 	};
 
+	/**
+	 * Determines if provided value is nearly equal to provided target value.
+	 */
 	math.IsNearlyEqual = function( value, target )
 	{
 		return (value >= target - errortollerance && value <= target + errortollerance);

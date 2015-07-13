@@ -33,6 +33,9 @@ GHud = (function()
 		return bets[betIndex];
 	}
 
+	/**
+	 * Increases the bet value of the player when he/she hits the + button
+	 */
 	function IncreaseBetValue()
 	{
 		if (betIndex < bets.length - 1)
@@ -42,6 +45,9 @@ GHud = (function()
 		return GetBetValue();
 	}
 
+	/**
+	 * Decreases the bet value of the player when he/she hits the - button
+	 */
 	function DecreaseBetValue()
 	{
 		if (betIndex > 0)
@@ -51,6 +57,9 @@ GHud = (function()
 		return GetBetValue();
 	}
 
+	/**
+	 * Setups the main centred interface
+	 */
 	function CreateBetMoneyContainer()
 	{
 		hud.BetMoneyContainer = new createjs.Container();
@@ -59,6 +68,9 @@ GHud = (function()
 		GCore.AddVisual(hud.BetMoneyContainer);
 	}
 
+	/**
+	 * Updates the text in the YourMoney UI
+	 */
 	function UpdateYourMoney()
 	{
 		hud.YourMoney.Label.text = hud.Currency + " " + 
@@ -73,6 +85,9 @@ GHud = (function()
 		}
 	}
 
+	/**
+	 * Creates the Visual for the YourMoney UI
+	 */
 	function CreateYourMoney()
 	{
 		var bg = new createjs.Bitmap(GImages.YourMoney);
@@ -96,6 +111,9 @@ GHud = (function()
 		UpdateYourMoney();
 	}
 
+	/**
+	 * Updates the text of the value indicator for each worm.
+	 */
 	function UpdateWormBets()
 	{
 
@@ -121,6 +139,10 @@ GHud = (function()
 		hud.RightWormBet.Label.x = 820 - rightLength * 0.5;
 	}
 
+	/**
+	 * Creates the UI for the value indicator, how much is the worm worth
+	 * when it wins.
+	 */
 	function CreateWormBets()
 	{
 		var left = new createjs.Bitmap(GImages.WormBet);
@@ -160,6 +182,10 @@ GHud = (function()
 		UpdateWormBets();
 	}
 
+	/**
+	 * Transfers the money of the player to the left worm's pot and adjusts
+	 * the value with its current multiplier.
+	 */
 	function BetForLeft()
 	{
 		hud.LeftWormBet.Value += hud.CurrentBet.Value * hud.LeftMultiplier.Value;
@@ -168,6 +194,10 @@ GHud = (function()
 		UpdateYourMoney();
 	}
 
+	/**
+	 * Transfers the money of the player to the right worm's pot and adjusts
+	 * the value with its current multiplier.
+	 */
 	function BetForRight()
 	{
 		hud.RightWormBet.Value += hud.CurrentBet.Value * hud.RightMultiplier.Value;
@@ -176,6 +206,9 @@ GHud = (function()
 		UpdateYourMoney();
 	}
 
+	/**
+	 * Creates the UI for the bet buttons (Left Wins | Right Wins)
+	 */
 	function CreateBetButtons()
 	{
 		var spriteSheet = new createjs.SpriteSheet(
@@ -200,6 +233,9 @@ GHud = (function()
 		hud.BetRightWins.on("click", BetForRight);
 	}
 
+	/**
+	 * Updates the text of the Multiplier UI
+	 */
 	function UpdateMultiplier()
 	{
 		hud.LeftMultiplier.Label.text  = "x " + GMath.Format(hud.LeftMultiplier.Value, 1);
@@ -216,6 +252,13 @@ GHud = (function()
 		hud.RightMultiplier.Label.visible = (hud.RightMultiplier.Value > 1);
 	}
 
+	/**
+	 * Called by the game if a round was finished.
+	 * 
+	 * @param {boolean} FromLeft 
+	 * 						true if the player wins the pot of the left worm,
+	 * 						false if he/she wins the pot of the right worm.
+	 */
 	hud.EarnMoney = function( FromLeft )
 	{
 		var value = 0;
@@ -236,6 +279,11 @@ GHud = (function()
 		UpdateWormBets();
 	};
 
+	/**
+	 * Sets the multiplier of the left worm
+	 * 
+	 * @param {Number} value The new multiplier
+	 */
 	hud.SetLeftMultiplier = function( value )
 	{
 		if (value < 1) value = 1;
@@ -243,6 +291,12 @@ GHud = (function()
 		UpdateMultiplier();
 	};
 
+	/**
+	 * Sets the multiplier of the right worm
+	 * 
+	 * @param {Number} value The new multiplier
+	 */
+	 */
 	hud.SetRightMultiplier = function( value )
 	{
 		if (value < 1) value = 1;
@@ -250,6 +304,9 @@ GHud = (function()
 		UpdateMultiplier();
 	};
 
+	/**
+	 * Creates the UI for the multiplier information
+	 */
 	function CreateMultiplier()
 	{
 		var left = new createjs.Bitmap(GImages.Multiplier);
@@ -286,12 +343,18 @@ GHud = (function()
 		UpdateMultiplier();
 	}
 
+	/**
+	 * Updates the text of the current bet value.
+	 */
 	function UpdateCurrentBet()
 	{
 		hud.CurrentBet.Label.text = hud.Currency + " " + 
 			hud.CurrentBet.Value.toMoney(hud.DecimalSep, hud.ThousendSep);
 	}
 
+	/**
+	 * Creates the UI for the current bet value.
+	 */
 	function CreateCurrentBet()
 	{
 		hud.CurrentBet = {};
@@ -313,6 +376,9 @@ GHud = (function()
 		UpdateCurrentBet();
 	}
 
+	/**
+	 * Creates the UI for '+' and '-' button to adjust the bet value.
+	 */
 	function CreateMoneyButtons()
 	{
 		var spriteSheet = new createjs.SpriteSheet(
@@ -345,6 +411,10 @@ GHud = (function()
 		});
 	}
 
+	/**
+	 * Creates the visuals and logic of the HUD.
+	 * @attention Call it only if the images for the HUD are loaded!
+	 */
 	hud.Construct = function()
 	{
 		GCore.GetStage().enableMouseOver(10);

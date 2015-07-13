@@ -45,6 +45,9 @@ GBody.prototype.SetLength = function(length)
 	this.Visual.y = length;
 };
 
+/**
+ * Gets the Y location of the worm = length of worm which is out of the hole
+ */
 GBody.prototype.GetLength = function()
 {
 	return this.Visual.y;
@@ -59,7 +62,10 @@ GBody.prototype.SetIsSinking = function( IsSinking )
 	this.IsSinking = IsSinking;
 };
 
+/**
+ * Ticks the body
+ */
 GBody.prototype.Tick = function( dt )
 {
-
+	// nothing to do here at the moment
 };

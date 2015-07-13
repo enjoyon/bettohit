@@ -34,8 +34,12 @@ GConfig = (function()
 		SinkingSpeed : 4,
 	};
 
+	/**
+	 * Configuration of the world 
+	 */
 	config.World =
 	{
+		// Position offset of the lamp
 		LampOffsetX :   10,
 		LampOffsetY :  -70,
 
@@ -45,6 +49,9 @@ GConfig = (function()
 		RightWormX	: 540,
 	};
 
+	/**
+	 * Configuration of the Lefti worm
+	 */
 	config.Lefti =
 	{
 		OffsetY: 0,
@@ -64,6 +71,9 @@ GConfig = (function()
 		DeathY : 60,
 	};
 
+	/**
+	 * Configuration of the Schleimi worm
+	 */
 	config.Schleimi =
 	{
 		OffsetY : 0,
@@ -83,6 +93,9 @@ GConfig = (function()
 		DeathY : 40,
 	};
 
+	/**
+	 * Configuration of the Starki worm
+	 */
 	config.Starki =
 	{
 		LeftOffset  : -30,
@@ -102,6 +115,9 @@ GConfig = (function()
 		DeathY : 60,
 	};
 
+	/**
+	 * Configuration of the Hammer weapon
+	 */
 	config.Hammer =
 	{
 		Strength : 3,
@@ -118,6 +134,9 @@ GConfig = (function()
 		SoundDelay: 200,
 	};
 
+	/**
+	 * Configuration of the Schlag weapon
+	 */
 	config.Schlag =
 	{
 		Strength : 2.5,
@@ -134,6 +153,9 @@ GConfig = (function()
 		SoundDelay: 50,
 	};
 
+	/**
+	 * Configuration of the Stock weapon
+	 */
 	config.Stock =
 	{
 		Strength : 1.5,

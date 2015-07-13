@@ -21,6 +21,9 @@ GImages = (function()
 
 	onLoaded = null;
 
+	/**
+	 * Called for each image which was loaded
+	 */
 	function loaded()
 	{
 		stuffToLoad = stuffToLoad - 1;
@@ -31,12 +34,19 @@ GImages = (function()
 		}
 	}
 
+	/**
+	 * Called when an images cannot be loaded
+	 */
 	function error()
 	{
 		console.log("Error in loading an image.");
 		loaded();
 	}
 
+	/**
+	 * Creates a new Image instance, 
+	 * which will be immediately loaded.
+	 */
 	function createImage(Path)
 	{
 		++stuffToLoad;
@@ -48,6 +58,12 @@ GImages = (function()
 		return img;
 	}
 
+	/**
+	 * Creates all required Images for the canvas rendering.
+	 * 
+	 * @param {function} OnLoaded Provided function will be called
+	 * when all images are loaded.
+	 */
 	images.Initialize = function( OnLoaded )
 	{
 		onLoaded = OnLoaded;
@@ -87,11 +103,13 @@ GImages = (function()
 	return images;
 })();
 
+/**
+ * Container of main game
+ * Handles the initialisation of the game and the attack allowence of the worms. 
+ */
 GGame = (function()
 {
 	var game = {};
-
-	var LinkiBody = null;
 
 	var leftWorm = null;
 	var leftWeapon = null;
@@ -109,6 +127,13 @@ GGame = (function()
 	var messageField = null;
 	var Looser = null;
 
+	/**
+	 * Creates a random weapon for a worm.
+	 * 
+	 * @param {boolean} IsLeft 
+	 * 						true determines that the weapon is for the left worm, 
+	 * 						false - the weapon is for the right worm
+	 */
 	function GetRandomWeapon(IsLeft)
 	{
 		var x = Math.random();
@@ -126,6 +151,15 @@ GGame = (function()
 		}
 	}
 
+	/**
+	 * Creates a random worm.
+	 * 
+	 * @param {boolean} IsLeft 
+	 * 						true determines that the worm on the left should be created
+	 * 						false - the worm for the right position will be created
+	 * 
+	 * @param {GWeapon} Weapon The weapon for the worm.
+	 */
 	function GetRandomWorm(IsLeft, Weapon)
 	{
 		var x = Math.random();
@@ -143,6 +177,11 @@ GGame = (function()
 		}
 	}
 
+	/**
+	 * Called from a worm which died.
+	 * 
+	 * @param {Worm} The worm which died and loosed the game
+	 */
 	game.GameOver = function( looser )
 	{
 		GHud.EarnMoney( looser != leftWorm );
@@ -150,6 +189,9 @@ GGame = (function()
 		IsGameOver = true;
 	};
 
+	/**
+	 * Starts a new battle round
+	 */
 	game.InitializeRound = function()
 	{
 		if (rightWorm)
@@ -173,6 +215,9 @@ GGame = (function()
 		rightWeapon.SetOpponent(leftWorm);
 	};
 
+	/**
+	 * Setups the game after all images and sounds are loaded.
+	 */
 	function setupGame()
 	{
 		// create world
@@ -192,6 +237,13 @@ GGame = (function()
 		createjs.Sound.play("music", ppc);
 	}
 
+	/**
+	 * Callback for the GImages and GSound module.
+	 * If one of the modules are ready this function
+	 * will be called.
+	 * After all modules are loaded the main game
+	 * will be initialized.
+	 */
 	function loaded()
 	{
 		game.stuffToLoad = game.stuffToLoad - 1;
@@ -203,16 +255,25 @@ GGame = (function()
 		}
 	}
 
+	/**
+	 * Interface to load the images
+	 */
 	function loadImages()
 	{
 		GImages.Initialize( loaded );
 	}
 
+	/**
+	 * Interface to load the sound
+	 */
 	function loadSound()
 	{
 		GSound.Initialize( loaded );
 	}
 
+	/**
+	 * Determines if currently a worm is attacking.
+	 */
 	game.IsSomeoneAttacking = function()
 	{
 		return (rightWeapon.IsAttacking || leftWeapon.IsAttacking);
@@ -237,6 +298,12 @@ GGame = (function()
 		loadSound();
 	};
 
+	/**
+	 * Called by the Worm when it finished its last animation.
+	 * At the end of the round worms can play an animation after DoEnd() was called.
+	 * 
+	 * @param {Worm} The worm which finished the last animation.
+	 */
 	game.WormFinished = function( worm )
 	{
 		if (leftWorm === worm) leftWorm = null;
@@ -279,6 +346,8 @@ GGame = (function()
 	 * Gets the opponent worm to provided worm.
 	 * If it is the left worm, return the right worm 
 	 * and vice versa.
+	 * 
+	 * @param {Worm} The worm to get the opponent to.
 	 */
 	game.GetOpponent = function( worm )
 	{
@@ -287,6 +356,16 @@ GGame = (function()
 		return null;
 	};
 
+	/**
+	 * Called by a worm who wishes to attack.
+	 * This function prevents that both worms 
+	 * attack at the same tick.
+	 * Furthermore it prevents that only the first
+	 * worm (in the ticking queue) will attack
+	 * if both worms want to attack at the same tick.
+	 * 
+	 * @param {Worm} worm The worm which wants to attack.
+	 */
 	game.PushWishToAttack = function( worm )
 	{
 		if (game.IsSomeoneAttacking()) return;

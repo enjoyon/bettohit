@@ -15,6 +15,9 @@ GParticles = (function()
 
 	var sprite = null;
 
+	/**
+	 * Creates the particle system
+	 */
 	p.Construct = function()
 	{
 		// Sprite sheet data
@@ -27,6 +30,15 @@ GParticles = (function()
 		sprite = new createjs.Sprite(new createjs.SpriteSheet(data));
 	};
 
+	/**
+	 * Emmits the provided amount of particles at provided position in the scene.
+	 * 
+	 * @param {Integer} count The amount of particles to emit
+	 * @param {Number} x The X location where the particles should be emitted
+	 * @param {Number} y The Y location where the particles should be emitted
+	 * @param {Number} speed The median speed the particles should have
+	 * @param {Number} speedY Special Y speed value to adjust the emission in Y direction
+	 */
 	function addSparkles(count, x, y, speed, speedY)
 	{
 		//create the specified number of sparkles
@@ -56,16 +68,34 @@ GParticles = (function()
 		}
 	}
 
+	/**
+	 * Utility function for the game to create particles when an attack occurred.
+	 * 
+	 * @param {Number} x The X position where the attack occurred.
+	 * @param {Number} y The Y position where the attack occurred.
+ 	 */
 	p.Attack = function (x, y)
 	{
 		addSparkles(Math.random() * 100 + 20 | 0, x, y, 1, 0);
 	}
 
+	/**
+	 * Called in GParticles.Win to make a long lasting fountain.
+	 * 
+	 * @param {Number} x The X position where the fountain should start.
+	 * @param {Number} y The Y position where the fountain should start.
+ 	 */
 	function WinParticles(x, y)
 	{
 		addSparkles(Math.random() * 200 + 1 | 0, x, y, 1, -20);
 	}
 
+	/**
+	 * Utility function for the game to create a fountain at provided position.
+	 * 
+	 * @param {Number} x The X position where the fountain should start.
+	 * @param {Number} y The Y position where the fountain should start.
+ 	 */
 	p.Win = function (x, y)
 	{
 		WinParticles(x, y);
@@ -78,6 +108,11 @@ GParticles = (function()
 		setTimeout(WinParticles, 700, x, y);
 	}
 
+	/**
+	 * Updates the particles with provided delta time.
+	 * 
+	 * @param {Number} dt Delta time in seconds.
+	 */
 	p.Tick = function(dt)
 	{
 		// loop through all of the active sparkles on stage:
