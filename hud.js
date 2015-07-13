@@ -73,7 +73,7 @@ GHud = (function()
 	 */
 	function UpdateYourMoney()
 	{
-		hud.YourMoney.Label.text = hud.Currency + " " + 
+		hud.YourMoney.Label.text = hud.Currency + " " +
 			hud.YourMoney.Value.toMoney(hud.DecimalSep, hud.ThousendSep);
 		if (hud.YourMoney.Value < 0)
 		{
@@ -117,7 +117,7 @@ GHud = (function()
 	function UpdateWormBets()
 	{
 
-		var leftTxt = hud.Currency + " " + 
+		var leftTxt = hud.Currency + " " +
 			hud.LeftWormBet.Value.toMoney(hud.DecimalSep, hud.ThousendSep);
 
 		var leftLength = leftTxt.length * 18 + 55;
@@ -128,7 +128,7 @@ GHud = (function()
 		hud.LeftWormBet.Label.x = leftLength * 0.5 - 20;
 
 
-		var rightTxt = hud.Currency + " " + 
+		var rightTxt = hud.Currency + " " +
 			hud.RightWormBet.Value.toMoney(hud.DecimalSep, hud.ThousendSep);
 
 		var rightLength = rightTxt.length * 18 + 55;
@@ -295,7 +295,6 @@ GHud = (function()
 	 * Sets the multiplier of the right worm
 	 * 
 	 * @param {Number} value The new multiplier
-	 */
 	 */
 	hud.SetRightMultiplier = function( value )
 	{
